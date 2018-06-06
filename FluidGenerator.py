@@ -10,5 +10,5 @@ test_file = open("fluid.xyz","w")
 test_file.write("{}\n\n".format(len(px[0])))
 
 for i in range(10000):
-  test_file.write("{} {} {} {} {}\n".format("H",px[0][i],py[0][i],pz[0][i],1))
+  test_file.write("{} {} {} {}\n".format("H",px[0][i],py[0][i],pz[0][i]))
 test_file.close()
