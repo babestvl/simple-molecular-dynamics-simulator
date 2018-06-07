@@ -15,8 +15,8 @@ vz = np.random.random_integers(-1, 1, size=(1, 10000))
 px,py,pz = px[0],py[0],pz[0]
 
 for i in range(10000):
-  co_sum = (px[i]**2)+(py[i]**2)+(pz[i]**2)
-  if co_sum**(1/3) > 1:
+  r = (px[i]**2)+(py[i]**2)+(pz[i]**2)
+  if r**(1/3) > 1:
     px[i] = 0
     py[i] = 0
     pz[i] = 0
