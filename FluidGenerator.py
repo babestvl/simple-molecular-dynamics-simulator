@@ -1,29 +1,30 @@
 import numpy as np
+import math
 
 # initial values
-i = 0
+count = 0
 
 test_file = open("fluid.xyz","w")
 
-def cart2sph(x, y, z):
-    hxy = np.hypot(x, y)
-    r = np.hypot(hxy, z)
-    el = np.arctan2(z, hxy)
-    az = np.arctan2(y, x)
-    return az, el, r
+px = np.random.uniform(-1, 1, size=(1, 10000))
+py = np.random.uniform(-1, 1, size=(1, 10000))
+pz = np.random.uniform(-1, 1, size=(1, 10000))
+vx = np.random.random_integers(-1, 1, size=(1, 10000))
+vy = np.random.random_integers(-1, 1, size=(1, 10000))
+vz = np.random.random_integers(-1, 1, size=(1, 10000))
+px,py,pz = px[0],py[0],pz[0]
 
-for i in range(10):
-  i += 1
-  px = np.random.uniform(-1, 1, size=(1, 10000))
-  py = np.random.uniform(-1, 1, size=(1, 10000))
-  pz = np.random.uniform(-1, 1, size=(1, 10000))
-  vx = np.random.random_integers(-1, 1, size=(1, 10000))
-  vy = np.random.random_integers(-1, 1, size=(1, 10000))
-  vz = np.random.random_integers(-1, 1, size=(1, 10000))
-  
-  test_file.write("{}\n{}\n".format(len(px[0]),i))
-  for i in range(10000):
-    px[0][i],py[0][i],pz[0][i] = cart2sph(px[0][i],py[0][i],pz[0][i])
-    test_file.write("{} {} {} {}\n".format("H",px[0][i],py[0][i],pz[0][i]))
+for i in range(10000):
+  co_sum = (px[i]**2)+(py[i]**2)+(pz[i]**2)
+  if co_sum**(1/3) > 1:
+    px[i] = 0
+    py[i] = 0
+    pz[i] = 0
+    count += 1
+
+test_file.write("{}\n{}\n".format(10000-count,1))
+for i in range(10000):
+  if px[i] != 0:
+    test_file.write("{} {} {} {}\n".format("H",px[i],py[i],pz[i]))
 
 test_file.close()
