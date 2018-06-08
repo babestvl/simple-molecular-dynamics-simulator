@@ -7,7 +7,7 @@ start_time = time.time()
 # initial values
 count = 0
 
-test_file = open("fluid.xyz","w")
+result_file = open("fluid.xyz","w")
 px = np.random.uniform(-1, 1, size=(1, 10000))
 py = np.random.uniform(-1, 1, size=(1, 10000))
 pz = np.random.uniform(-1, 1, size=(1, 10000))
@@ -22,11 +22,11 @@ for i in range(10000):
     py[i] = 0
     pz[i] = 0
     count += 1
-test_file.write("{}\n{}\n".format(10000-count,1))
+result_file.write("{}\n{}\n".format(10000-count,1))
 for i in range(10000):
   if px[i] != 0:
-    test_file.write("{} {} {} {}\n".format("H",px[i],py[i],pz[i]))
+    result_file.write("{} {} {} {}\n".format("H",px[i],py[i],pz[i]))
       
-test_file.close()
+result_file.close()
 
 print("--- %s seconds ---" % (time.time() - start_time))
