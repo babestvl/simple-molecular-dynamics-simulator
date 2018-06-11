@@ -18,14 +18,14 @@ result_file = open("fluid.xyz","w")
 px = np.random.uniform(-1, 1, size=(1, 10000))
 py = np.random.uniform(-1, 1, size=(1, 10000))
 pz = np.random.uniform(-1, 1, size=(1, 10000))
-vx = np.random.random_integers(-1, 1, size=(1, 10000))
-vy = np.random.random_integers(-1, 1, size=(1, 10000))
-vz = np.random.random_integers(-1, 1, size=(1, 10000))
+vx = np.random.random_integers(-2.273, 2.273, size=(1, 10000))
+vy = np.random.random_integers(-2.273, 2.273, size=(1, 10000))
+vz = np.random.random_integers(-2.273, 2.273, size=(1, 10000))
 px,py,pz = px[0],py[0],pz[0]
 
 for i in range(10000):
   r = (px[i]**2)+(py[i]**2)+(pz[i]**2)
-  r = r**(1/3)
+  r = r**(1/2)
   if r > 1:
     px[i] = 0
     py[i] = 0
@@ -50,4 +50,5 @@ def verletCalculation(force):
   momantum = + 0.5*delta_time*force
   return (momantum,r)
 
-def forceCalulation(r)
+def forceCalulation(r):
+  pass
