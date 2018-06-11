@@ -1,11 +1,17 @@
 import numpy as np
 import math
 import time
+import datetime
 
 start_time = time.time()
 
 # initial values
 count = 0
+delta_time = 1 * math.pow(10, -12)
+argon_mass = 39.948
+mol = 6.022 * math.pow(10, 23)
+sigma = 5.670 * math.pow(10, -8)
+temp = 300
 
 result_file = open("fluid.xyz","w")
 
@@ -35,3 +41,13 @@ for i in range(10000):
 result_file.close()
 
 print("--- %s seconds ---" % (time.time() - start_time))
+
+def verletCalculation(force):
+  global delta_time, argon_mass
+  momantum = momantum + 0.5*delta_time*force
+  r = r + delta_time*momantum/argon_mass
+  force = forceCalculation(r)
+  momantum = + 0.5*delta_time*force
+  return (momantum,r)
+
+def forceCalulation(r)
