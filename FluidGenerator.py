@@ -8,54 +8,67 @@ start_time = time.time()
 # initial values
 count = 0
 delta_time = 1 * math.pow(10, -12)
-argon_mass = 39.948
+mass_argon = 39.948
 mol = 6.022 * math.pow(10, 23)
 sigma = 5.670 * math.pow(10, -8)
-temp = 300
+T = 300
 R = 1
+Kb = 2.293 * math.pow(10, -47)
 
 result_file = open("fluid.xyz","w")
 
 #Position
-px = np.random.uniform(-1, 1, size=(1, 10000))
-py = np.random.uniform(-1, 1, size=(1, 10000))
-pz = np.random.uniform(-1, 1, size=(1, 10000))
+xp = np.random.uniform(-1, 1, 10000)
+yp = np.random.uniform(-1, 1, 10000)
+zp = np.random.uniform(-1, 1, 10000)
 
 #Velocity
-vx = np.random.random_integers(-2.273, 2.273, size=(1, 10000))
-vy = np.random.random_integers(-2.273, 2.273, size=(1, 10000))
-vz = np.random.random_integers(-2.273, 2.273, size=(1, 10000))
+random_velocity = np.random.uniform(-5, 5, 3)
 
-px,py,pz = px[0],py[0],pz[0]
-for i in range(10000):
-  r = (px[i]**2)+(py[i]**2)+(pz[i]**2)
-  r = r**(1/2)
-  if r > R:
-    px[i] = 0
-    py[i] = 0
-    pz[i] = 0
-    count += 1
+#Initial Velocity
+a = math.sqrt(random_velocity[0]**2 + random_velocity[1]**2 + random_velocity[2]**2)
+initial_velocity = math.sqrt((3 * Kb * T)/(mass_argon))
+velocity_vector = initial_velocity * (random_velocity/a)
+momentum_vector = mass_argon * velocity_vector
 
-result_file.write("{}\n{}\n".format(10000-count,1))
-
-for i in range(10000):
-  if px[i] != 0:
-    result_file.write("{} {} {} {}\n".format("H",px[i],py[i],pz[i]))
-      
-result_file.close()
-
-print("--- %s seconds ---" % (time.time() - start_time))
+def update(x,y,z):
+  return (x+np.random.uniform(-1,1,1), y+np.random.uniform(-1,1,1), z+np.random.uniform(-1,1,1))
 
 def verletCalculation(force):
-  global delta_time, argon_mass
+  global delta_time, mass_argon
   momantum = momantum + 0.5*delta_time*force
-  r = r + delta_time*momantum/argon_mass
+  r = r + delta_time*momantum/mass_argon
   force = forceCalculation(r)
   momantum = + 0.5*delta_time*force
   return (momantum,r)
 
-def update():
-  
-
 def forceCalulation(r):
   pass
+
+delete_index = []
+for i in range(10000):
+  r = (xp[i]**2)+(yp[i]**2)+(zp[i]**2)
+  r = r**(1/2)
+  if r > R:
+    delete_index.append(i)
+    count += 1
+
+xp = np.delete(xp, delete_index)
+yp = np.delete(yp, delete_index)
+zp = np.delete(zp, delete_index)
+
+# -------------------------
+
+for j in range(1000):
+  result_file.write("{}\n{}\n".format(len(xp),1))
+  for i in range(len(xp)):
+    if xp[i] != 0:
+      result_file.write("{} {} {} {}\n".format("H",xp[i],yp[i],zp[i]))
+      xp[i],yp[i],zp[i] = update(xp[i],yp[i],zp[i])
+      
+# -------------------------
+
+
+result_file.close()
+
+print("--- %s seconds ---" % (time.time() - start_time))
