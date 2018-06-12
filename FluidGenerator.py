@@ -12,21 +12,25 @@ argon_mass = 39.948
 mol = 6.022 * math.pow(10, 23)
 sigma = 5.670 * math.pow(10, -8)
 temp = 300
+R = 1
 
 result_file = open("fluid.xyz","w")
 
+#Position
 px = np.random.uniform(-1, 1, size=(1, 10000))
 py = np.random.uniform(-1, 1, size=(1, 10000))
 pz = np.random.uniform(-1, 1, size=(1, 10000))
+
+#Velocity
 vx = np.random.random_integers(-2.273, 2.273, size=(1, 10000))
 vy = np.random.random_integers(-2.273, 2.273, size=(1, 10000))
 vz = np.random.random_integers(-2.273, 2.273, size=(1, 10000))
-px,py,pz = px[0],py[0],pz[0]
 
+px,py,pz = px[0],py[0],pz[0]
 for i in range(10000):
   r = (px[i]**2)+(py[i]**2)+(pz[i]**2)
   r = r**(1/2)
-  if r > 1:
+  if r > R:
     px[i] = 0
     py[i] = 0
     pz[i] = 0
@@ -49,6 +53,9 @@ def verletCalculation(force):
   force = forceCalculation(r)
   momantum = + 0.5*delta_time*force
   return (momantum,r)
+
+def update():
+  
 
 def forceCalulation(r):
   pass
