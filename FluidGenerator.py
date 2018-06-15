@@ -10,11 +10,12 @@ count = 0
 delta_time = 1 * math.pow(10, -15) # 0.001 s to ps
 mass_argon = 39.948
 mol = 6.022 * math.pow(10, 23)
-sigma = 5.670 * math.pow(10, -8)
+sigma = 5.670367 * math.pow(10, -8)
 T = 300
 R = 1
 # wrong value
-Kb = 1.38 * math.pow(10, -23)
+Kb = 2.292674407 * math.pow(10, -50)
+Kb = 1.3806485279 * math.pow(10, -23)
 
 # Initial Atoms Position
 xp = np.random.uniform(-1, 1, 10000)
