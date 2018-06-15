@@ -2,6 +2,7 @@ import numpy as np
 import math
 import time
 import datetime
+from Atom import Atom
 
 start_time = time.time()
 
@@ -14,31 +15,21 @@ sigma = 5.670367 * math.pow(10, -8)
 T = 300
 R = 1
 # wrong value
-Kb = 2.292674407 * math.pow(10, -50)
+# Kb = 2.292674407 * math.pow(10, -50)
 # Kb = 1.3806485279 * math.pow(10, -23)
+Kb = 2.292674407 * math.pow(10, -12)
 
-# Initial Atoms Position
-xp = np.random.uniform(-1, 1, 10000)
-yp = np.random.uniform(-1, 1, 10000)
-zp = np.random.uniform(-1, 1, 10000)
+# Initial Atoms
+atoms = [Atom() for i in range(10000)]
 
 # Delete unusable atoms
-delete_index = []
-for i in range(10000):
-  r = (xp[i]**2)+(yp[i]**2)+(zp[i]**2)
-  r = r**(1/2)
-  if r > R:
-    delete_index.append(i)
-    count += 1
-xp = np.delete(xp, delete_index)
-yp = np.delete(yp, delete_index)
-zp = np.delete(zp, delete_index)
-atom_range = len(xp)
+usable_atoms = []
+for atom in atoms:
+  if atom.getR() < R:
+    usable_atoms.append(atom)
+atoms = usable_atoms
 
 # Random Velocity and Direction
-xv = np.random.uniform(-5, 5, atom_range)
-yv = np.random.uniform(-5, 5, atom_range)
-zv = np.random.uniform(-5, 5, atom_range)
 random_velocity = np.random.uniform(-5, 5, 3)
 
 # Initial Velocity and Momentum
@@ -48,14 +39,9 @@ velocity_vector = initial_velocity * (random_velocity / a)
 momentum_vector = mass_argon * velocity_vector
 
 # Apply Initial Velocity to Direction
-for i in range(atom_range):
-  xv[i] *= momentum_vector[0]
-  yv[i] *= momentum_vector[1]
-  zv[i] *= momentum_vector[2]
-
-def update(x,y,z,i):
-  global xv, yv, zv
-  return (x+xv[i], y+yv[i], z+zv[i])
+for atom in atoms:
+  atom.setMomentum_vector(momentum_vector)
+  atom.setVelocityVector(velocity_vector)
 
 def verletCalculation(force):
   global delta_time, mass_argon
@@ -68,17 +54,19 @@ def verletCalculation(force):
 def forceCalculation(r):
   pass
 
-result_file = open("fluid.xyz","w")
+def update(atom):
+  atom.updatePosition_vector()
+
+result_file = open("fluid2.xyz","w")
 
 # -------------------------
 
-for j in range(1000):
-  result_file.write("{}\n{}\n".format(atom_range,1))
-  for i in range(atom_range):
-    if xp[i] != 0:
-      result_file.write("{} {} {} {}\n".format("H", xp[i], yp[i], zp[i]))
-      xp[i],yp[i],zp[i] = update(xp[i], yp[i], zp[i], i)
-      
+for i in range(1000):
+  result_file.write("{}\n{}\n".format(len(atoms),1))
+  for atom in atoms:
+    result_file.write("{} {} {} {}\n".format("H", atom.position_vector[0], atom.position_vector[1], atom.position_vector[2]))
+    update(atom)
+
 # -------------------------
 
 result_file.close()
