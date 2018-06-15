@@ -7,14 +7,14 @@ start_time = time.time()
 
 # Initial Values
 count = 0
-delta_time = 1 * math.pow(10, -12)
+delta_time = 1 * math.pow(10, -15) # 0.001 s to ps
 mass_argon = 39.948
 mol = 6.022 * math.pow(10, 23)
 sigma = 5.670 * math.pow(10, -8)
 T = 300
 R = 1
 # wrong value
-Kb = 1.38 * math.pow(10, -5)
+Kb = 1.38 * math.pow(10, -23)
 
 # Initial Atoms Position
 xp = np.random.uniform(-1, 1, 10000)
@@ -35,9 +35,9 @@ zp = np.delete(zp, delete_index)
 atom_range = len(xp)
 
 # Random Velocity and Direction
-xd = np.random.uniform(-5, 5, atom_range)
-yd = np.random.uniform(-5, 5, atom_range)
-zd = np.random.uniform(-5, 5, atom_range)
+xv = np.random.uniform(-5, 5, atom_range)
+yv = np.random.uniform(-5, 5, atom_range)
+zv = np.random.uniform(-5, 5, atom_range)
 random_velocity = np.random.uniform(-5, 5, 3)
 
 # Initial Velocity and Momentum
@@ -48,13 +48,13 @@ momentum_vector = mass_argon * velocity_vector
 
 # Apply Initial Velocity to Direction
 for i in range(atom_range):
-  xd[i] *= velocity_vector[0]
-  yd[i] *= velocity_vector[1]
-  zd[i] *= velocity_vector[2]
+  xv[i] *= momentum_vector[0]
+  yv[i] *= momentum_vector[1]
+  zv[i] *= momentum_vector[2]
 
 def update(x,y,z,i):
-  global xd, yd, zd
-  return (x+xd[i], y+yd[i], z+zd[i])
+  global xv, yv, zv
+  return (x+xv[i], y+yv[i], z+zv[i])
 
 def verletCalculation(force):
   global delta_time, mass_argon
@@ -64,7 +64,7 @@ def verletCalculation(force):
   momantum = + 0.5 * delta_time * force
   return (momantum, r)
 
-def forceCalulation(r):
+def forceCalculation(r):
   pass
 
 result_file = open("fluid.xyz","w")
