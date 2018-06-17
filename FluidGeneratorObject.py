@@ -11,13 +11,14 @@ count = 0
 delta_time = 1 * math.pow(10, -15) # 0.001 s to ps
 mass_argon = 39.948
 mol = 6.022 * math.pow(10, 23)
-sigma = 5.670367 * math.pow(10, -8)
+sigma = 5.67 * math.pow(10, -10)
 T = 300
 R = 1
+border_const = 15
 # wrong value
-# Kb = 2.292674407 * math.pow(10, -50)
-# Kb = 1.3806485279 * math.pow(10, -23)
-Kb = 2.292674407 * math.pow(10, -12)
+# Kb = 2.293 * math.pow(10, -50)
+# Kb = 1.380 * math.pow(10, -23)
+Kb = 2.293 * math.pow(10, -10)
 
 # Initial Atoms
 atoms = [Atom() for i in range(10000)]
@@ -55,6 +56,9 @@ def forceCalculation(r):
   pass
 
 def update(atom):
+  global R, border_const
+  # if atom.getR() > R:
+  #   atom.setMomentum_vector(((-border_const * (atom.getR() - R))/atom.getR()) * atom.momentum_vector)
   atom.updatePosition_vector()
 
 result_file = open("fluid2.xyz","w")
