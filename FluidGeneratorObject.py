@@ -43,7 +43,6 @@ for atom in atoms:
   atom.setVelocityVector(velocity_vector)
 
 def verletCalculation(force):
-  global delta_time, mass_argon
   momantum = momantum + 0.5 * delta_time * force
   r = r + delta_time * momantum / mass_argon
   force = forceCalculation(r)
@@ -57,14 +56,12 @@ def elasticBorder(atom):
   atom_r = atom.getR()
   border_force = ((((-border_const) * (atom_r - R)) / atom_r) * atom.position_vector)
   border_force *= delta_time
-  return border_force
+  atom.momentum_vector += border_force
+  atom.velocity_vector += border_force/mass_argon
 
 def update(atom):
-  global R
   if atom.getR() > R:
-    border_force = elasticBorder(atom)
-    atom.momentum_vector += border_force
-    # print("{} - {}".format(atom.momentum_vector, border_force))
+    elasticBorder(atom)
   atom.updatePositionVector()
 
 result_file = open("fluid2.xyz","w")
