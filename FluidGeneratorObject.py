@@ -8,12 +8,12 @@ start_time = time.time()
 
 # Initial Values
 count = 0
-delta_time = 1 * math.pow(10, -15) # 0.001 s to ps
+delta_time = 1 * math.pow(10, -3) # 0.001 ps
 mass_argon = 39.948
 mol = 6.022 * math.pow(10, 23)
 sigma = 5.67 * math.pow(10, -10)
 T = 300
-R = 1
+R = 5
 border_const = 15
 # wrong value
 # Kb = 2.293 * math.pow(10, -50)
@@ -21,7 +21,7 @@ border_const = 15
 Kb = 2.293 * math.pow(10, -10)
 
 # Initial Atoms
-atoms = [Atom() for i in range(10000)]
+atoms = [Atom() for i in range(5000)]
 
 # Delete unusable atoms
 usable_atoms = []
@@ -37,7 +37,7 @@ initial_velocity = math.sqrt((3 * Kb * T)/(mass_argon))
 velocity_vector = initial_velocity * (random_velocity / a)
 momentum_vector = mass_argon * velocity_vector
 
-# Apply Initial Velocity to Direction
+# Apply Initial Velocity and Momentum to Direction
 for atom in atoms:
   atom.setMomentumVector(momentum_vector)
   atom.setVelocityVector(velocity_vector)
@@ -54,14 +54,17 @@ def forceCalculation(r):
   pass
 
 def elasticBorder(atom):
-  global border_const
-  # atom.setMomentum_vector(((-border_const * (atom.getR() - R))/atom.getR()) * atom.momentum_vector)
-  pass
+  atom_r = atom.getR()
+  border_force = ((((-border_const) * (atom_r - R)) / atom_r) * atom.position_vector)
+  border_force *= delta_time
+  return border_force
 
 def update(atom):
   global R
-  # if atom.getR() > R:
-  #   elasticBorder(atom)
+  if atom.getR() > R:
+    border_force = elasticBorder(atom)
+    atom.momentum_vector += border_force
+    # print("{} - {}".format(atom.momentum_vector, border_force))
   atom.updatePositionVector()
 
 result_file = open("fluid2.xyz","w")
