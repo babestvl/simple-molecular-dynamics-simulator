@@ -19,3 +19,4 @@ class Atom:
 
   def updatePosition_vector(self):
     self.position_vector += self.momentum_vector
+    
