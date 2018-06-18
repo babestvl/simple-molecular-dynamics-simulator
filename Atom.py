@@ -14,9 +14,9 @@ class Atom:
   def setVelocityVector(self, velocity_vector):
     self.velocity_vector = self.direction * velocity_vector
 
-  def setMomentum_vector(self, momentum_vector):
+  def setMomentumVector(self, momentum_vector):
     self.momentum_vector = self.direction * momentum_vector
 
-  def updatePosition_vector(self):
-    self.position_vector += self.momentum_vector
+  def updatePositionVector(self):
+    self.position_vector += self.velocity_vector
     

@@ -30,10 +30,8 @@ for atom in atoms:
     usable_atoms.append(atom)
 atoms = usable_atoms
 
-# Random Velocity and Direction
-random_velocity = np.random.uniform(-5, 5, 3)
-
 # Initial Velocity and Momentum
+random_velocity = np.random.uniform(-5, 5, 3)
 a = math.sqrt(random_velocity[0]**2 + random_velocity[1]**2 + random_velocity[2]**2)
 initial_velocity = math.sqrt((3 * Kb * T)/(mass_argon))
 velocity_vector = initial_velocity * (random_velocity / a)
@@ -41,7 +39,7 @@ momentum_vector = mass_argon * velocity_vector
 
 # Apply Initial Velocity to Direction
 for atom in atoms:
-  atom.setMomentum_vector(momentum_vector)
+  atom.setMomentumVector(momentum_vector)
   atom.setVelocityVector(velocity_vector)
 
 def verletCalculation(force):
@@ -55,11 +53,16 @@ def verletCalculation(force):
 def forceCalculation(r):
   pass
 
+def elasticBorder(atom):
+  global border_const
+  # atom.setMomentum_vector(((-border_const * (atom.getR() - R))/atom.getR()) * atom.momentum_vector)
+  pass
+
 def update(atom):
-  global R, border_const
+  global R
   # if atom.getR() > R:
-  #   atom.setMomentum_vector(((-border_const * (atom.getR() - R))/atom.getR()) * atom.momentum_vector)
-  atom.updatePosition_vector()
+  #   elasticBorder(atom)
+  atom.updatePositionVector()
 
 result_file = open("fluid2.xyz","w")
 
