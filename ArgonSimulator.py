@@ -64,7 +64,7 @@ def update(atom):
     elasticBorder(atom)
   atom.updatePositionVector()
 
-result_file = open("fluid2.xyz","w")
+result_file = open("sample_argon.xyz","w")
 
 # -------------------------
 
