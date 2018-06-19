@@ -1,5 +1,4 @@
 import numpy as np
-import math
 import time
 import datetime
 from Atom import Atom
@@ -7,18 +6,17 @@ from Atom import Atom
 start_time = time.time()
 
 # Initial Values
-count = 0
-delta_time = 1 * math.pow(10, -3) # 0.001 ps
+delta_time = 1 * np.power(10, -3) # 0.001 ps
 mass_argon = 39.948
-mol = 6.022 * math.pow(10, 23)
-sigma = 5.67 * math.pow(10, -10)
+mol = 6.022 * np.power(10, 23)
+sigma = 5.67 * np.power(10, -10)
 T = 300
 R = 5
 border_const = 15
 # wrong value
-# Kb = 2.293 * math.pow(10, -50)
-# Kb = 1.380 * math.pow(10, -23)
-Kb = 2.293 * math.pow(10, -10)
+# Kb = 2.293 * np.power(10, -50)
+# Kb = 1.380 * np.power(10, -23)
+Kb = 2.293 * np.power(10, -10)
 
 # Initial Atoms
 atoms = [Atom() for i in range(5000)]
@@ -32,8 +30,8 @@ atoms = usable_atoms
 
 # Initial Velocity and Momentum
 random_velocity = np.random.uniform(-5, 5, 3)
-a = math.sqrt(random_velocity[0]**2 + random_velocity[1]**2 + random_velocity[2]**2)
-initial_velocity = math.sqrt((3 * Kb * T)/(mass_argon))
+a = np.sqrt(np.power(random_velocity[0],2) + np.power(random_velocity[1],2) + np.power(random_velocity[2],2))
+initial_velocity = np.sqrt((3 * Kb * T)/(mass_argon))
 velocity_vector = initial_velocity * (random_velocity / a)
 momentum_vector = mass_argon * velocity_vector
 
@@ -42,7 +40,7 @@ for atom in atoms:
   atom.setMomentumVector(momentum_vector)
   atom.setVelocityVector(velocity_vector)
 
-def verletCalculation(force):
+def verletCalculation(atom):
   momantum = momantum + 0.5 * delta_time * force
   r = r + delta_time * momantum / mass_argon
   force = forceCalculation(r)

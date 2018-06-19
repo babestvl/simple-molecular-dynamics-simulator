@@ -6,7 +6,8 @@ class Atom:
     self.direction = np.random.random_integers(-1, 1, 3)
     self.velocity_vector = 0
     self.momentum_vector = 0
-
+    self.force_vector = 0
+    
   def getR(self):
     vector_square = np.power(self.position_vector,2)
     r_square = np.sum(vector_square)
