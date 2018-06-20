@@ -62,17 +62,18 @@ def verletCalculation(atom):
   atom.momentum_vector += 0.5 * delta_time * atom.force_vector
   atom.position_vector += delta_time * atom.momentum_vector / mass_argon
 
-result_file = open("sample_argon2.xyz","w")
+result_file = open("sample_argon.xyz","w")
 
 # -------------------------
 
 for i in range(10000):
   result_file.write("{}\n{}\n".format(len(atoms), 1))
   for atom in atoms:
-    result_file.write("{} {} {} {}\n".format("H", atom.position_vector[0], atom.position_vector[1], atom.position_vector[2]))
+    result_file.write("{} {} {} {}\n".format("Ar", atom.position_vector[0], atom.position_vector[1], atom.position_vector[2]))
     if atom.getDistance() > sphere_radius:
       elasticBorder(atom)
     verletCalculation(atom)
+  result_file.write("ENDMDL\n")
 
 # -------------------------
 
