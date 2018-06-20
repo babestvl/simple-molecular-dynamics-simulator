@@ -12,18 +12,18 @@ mol = 6.022 * (10**23)
 sigma = 3.4 * (10**-10)
 epsilon = 1.65 * (10**-2)
 T = 300
-R = 10
-border_const = 15
+max_distance = 10
+border_const = 5
 critical_distance = 2
 Kb = 8.3 * (10**-3)
 
 # Initial Atoms
-atoms = [Atom() for i in range(200)]
+atoms = [Atom() for i in range(216)]
 
 # Delete unusable atoms
 usable_atoms = []
 for atom in atoms:
-  if atom.getR() < R:
+  if atom.getDistance() <= max_distance:
     usable_atoms.append(atom)
 atoms = usable_atoms
 
@@ -52,8 +52,8 @@ def forceCalculation(atom):
         atom.force_vector += force
 
 def elasticBorder(atom):
-  atom_r = atom.getR()
-  border_force = (((-border_const) * (atom_r - R)) / atom_r) * atom.position_vector
+  atom_distance = atom.getDistance()
+  border_force = (((-border_const) * (atom_distance - max_distance)) / atom_distance) * atom.position_vector
   border_force *= delta_time
   # print("{} - {}".format(border_force, atom.momentum_vector))
   atom.momentum_vector += border_force
@@ -69,11 +69,11 @@ result_file = open("sample_argon.xyz","w")
 
 # -------------------------
 
-for i in range(1000):
+for i in range(5000):
   result_file.write("{}\n{}\n".format(len(atoms), 1))
   for atom in atoms:
     result_file.write("{} {} {} {}\n".format("H", atom.position_vector[0], atom.position_vector[1], atom.position_vector[2]))
-    if atom.getR() > R:
+    if atom.getDistance() > max_distance:
       elasticBorder(atom)
     verletCalculation(atom)
 

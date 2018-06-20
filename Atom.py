@@ -7,11 +7,11 @@ class Atom:
     self.momentum_vector = 0
     self.force_vector = 0
     
-  def getR(self):
+  def getDistance(self):
     vector_square = np.power(self.position_vector,2)
     r_square = np.sum(vector_square)
-    r = np.sqrt(r_square)
-    return r
+    distance = np.sqrt(r_square)
+    return distance
 
   def setInitialMomentumVector(self, momentum_vector):
     self.momentum_vector = self.direction * momentum_vector
