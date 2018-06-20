@@ -57,7 +57,6 @@ def elasticBorder(atom):
   atom.momentum_vector += border_force
 
 def verletCalculation(atom):
-  atom.force_vector = 0
   atom.momentum_vector += 0.5 * delta_time * atom.force_vector
   forceCalculation(atom)
   atom.momentum_vector += 0.5 * delta_time * atom.force_vector
@@ -67,7 +66,7 @@ result_file = open("sample_argon2.xyz","w")
 
 # -------------------------
 
-for i in range(5000):
+for i in range(10000):
   result_file.write("{}\n{}\n".format(len(atoms), 1))
   for atom in atoms:
     result_file.write("{} {} {} {}\n".format("H", atom.position_vector[0], atom.position_vector[1], atom.position_vector[2]))
