@@ -2,7 +2,7 @@ import numpy as np
 
 class Atom:
   def __init__(self):
-    self.position_vector = np.random.uniform(-15, 15, 3)
+    self.position_vector = np.random.uniform(-10, 10, 3)
     self.direction = np.random.random_integers(-3, 3, 3)
     self.momentum_vector = 0
     self.force_vector = 0

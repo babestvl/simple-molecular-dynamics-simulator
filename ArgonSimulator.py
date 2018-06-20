@@ -6,22 +6,19 @@ from Atom import Atom
 start_time = time.time()
 
 # Initial Values
-delta_time = 1 * (10**-3) # ps
+delta_time = 0.002 # ps
 mass_argon = 39.948
 mol = 6.022 * (10**23)
 sigma = 3.4 * (10**-10)
 epsilon = 1.65 * (10**-2)
 T = 300
-R = 15
+R = 10
 border_const = 15
-critical_distance = 3
-# wrong value
-# Kb = 2.293 * np.power(10, -50)
-# Kb = 1.380 * np.power(10, -23)
-Kb = 2.293 * (10**-3)
+critical_distance = 2
+Kb = 8.3 * (10**-3)
 
 # Initial Atoms
-atoms = [Atom() for i in range(300)]
+atoms = [Atom() for i in range(200)]
 
 # Delete unusable atoms
 usable_atoms = []
@@ -36,7 +33,7 @@ a = np.sqrt(np.power(random_velocity[0], 2) + np.power(random_velocity[1], 2) + 
 initial_velocity = np.sqrt((3 * Kb * T)/(mass_argon))
 velocity_vector = initial_velocity * (random_velocity / a)
 momentum_vector = mass_argon * velocity_vector
-print(momentum_vector)
+# print(momentum_vector)
 
 # Apply Initial Velocity and Momentum to Direction
 for atom in atoms:
@@ -46,7 +43,7 @@ def forceCalculation(atom):
   force = 0
   for a in atoms: 
     if id(a) != id(atom):
-      pos_diff = atom.position_vector - a.position_vector
+      pos_diff = a.position_vector - atom.position_vector
       distance_square = np.sum(np.power(pos_diff, 2))
       distance = np.sqrt(distance_square)
       if distance <= critical_distance:
@@ -58,7 +55,7 @@ def elasticBorder(atom):
   atom_r = atom.getR()
   border_force = (((-border_const) * (atom_r - R)) / atom_r) * atom.position_vector
   border_force *= delta_time
-  print("{} - {}".format(border_force, atom.momentum_vector))
+  # print("{} - {}".format(border_force, atom.momentum_vector))
   atom.momentum_vector += border_force
 
 def verletCalculation(atom):
@@ -66,13 +63,13 @@ def verletCalculation(atom):
   forceCalculation(atom)
   atom.momentum_vector += 0.5 * delta_time * atom.force_vector
   atom.position_vector += delta_time * atom.momentum_vector / mass_argon
-  print(atom.momentum_vector)
+  # print(atom.momentum_vector)
 
 result_file = open("sample_argon.xyz","w")
 
 # -------------------------
 
-for i in range(2000):
+for i in range(1000):
   result_file.write("{}\n{}\n".format(len(atoms), 1))
   for atom in atoms:
     result_file.write("{} {} {} {}\n".format("H", atom.position_vector[0], atom.position_vector[1], atom.position_vector[2]))
