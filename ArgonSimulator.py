@@ -69,13 +69,15 @@ result_file = open("sample_argon.xyz","w")
 
 # -------------------------
 
-for i in range(2000):
-  result_file.write("{}\n{}\n".format(len(atoms), 1))
+for i in range(20000):
   for atom in atoms:
-    result_file.write("{} {} {} {}\n".format("Ar", atom.position_vector[0], atom.position_vector[1], atom.position_vector[2]))
     if atom.getDistance() > sphere_radius:
       elasticBorder(atom)
     verletCalculation(atom)
+  if i%500==0:
+    result_file.write("{}\n{}\n".format(len(atoms), 1))
+    for atom in atoms:
+      result_file.write("{} {} {} {}\n".format("Ar", atom.position_vector[0], atom.position_vector[1], atom.position_vector[2]))
 
 # -------------------------
 
