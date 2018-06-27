@@ -45,9 +45,9 @@ atoms = usable_atoms
 
 # Initial Velocity and Momentum
 random_velocity = np.random.uniform(-5, 5, 3)
-a = np.sqrt(np.power(random_velocity[0], 2) + np.power(random_velocity[1], 2) + np.power(random_velocity[2], 2))
+tmp = np.sqrt(np.power(random_velocity[0], 2) + np.power(random_velocity[1], 2) + np.power(random_velocity[2], 2))
 initial_velocity = np.sqrt((3 * Kb * T)/(mass_argon))
-velocity_vector = initial_velocity * (random_velocity / a)
+velocity_vector = initial_velocity * (random_velocity / tmp)
 momentum_vector = mass_argon * velocity_vector
 
 # Apply Initial Momentum to Direction
