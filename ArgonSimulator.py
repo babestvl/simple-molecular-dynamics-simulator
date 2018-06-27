@@ -1,9 +1,25 @@
 import numpy as np
 import time
 import datetime
-from Atom import Atom
 
 start_time = time.time()
+
+class Atom:
+  def __init__(self):
+    self.id = 0
+    self.position_vector = np.random.uniform(-30, 30, 3)
+    self.direction = np.random.random_integers(-3, 3, 3)
+    self.momentum_vector = 0
+    self.force_vector = 0
+    
+  def getDistance(self):
+    vector_square = np.power(self.position_vector,2)
+    r_square = np.sum(vector_square)
+    distance = np.sqrt(r_square)
+    return distance
+
+  def setInitialMomentumVector(self, momentum_vector):
+    self.momentum_vector = self.direction * momentum_vector
 
 # Initial Values
 delta_time = 0.003 # ps
@@ -12,9 +28,9 @@ mol = 6.022 * (10**23)
 sigma = 3.4 * (10**-10)
 epsilon = 1.65 * (10**-2)
 T = 300
-sphere_radius = 30
+sphere_radius = 15
 border_const = 5
-critical_distance = 3.3
+critical_distance = 20
 Kb = 8.3 * (10**-3)
 
 # Initial Atoms
@@ -69,12 +85,12 @@ result_file = open("sample_argon.xyz","w")
 
 # -------------------------
 
-for i in range(20000):
+for i in range(2000):
   for atom in atoms:
     if atom.getDistance() > sphere_radius:
       elasticBorder(atom)
     verletCalculation(atom)
-  if i%500==0:
+  if i%10==0:
     result_file.write("{}\n{}\n".format(len(atoms), 1))
     for atom in atoms:
       result_file.write("{} {} {} {}\n".format("Ar", atom.position_vector[0], atom.position_vector[1], atom.position_vector[2]))
