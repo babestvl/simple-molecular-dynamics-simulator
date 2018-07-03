@@ -21,8 +21,8 @@ class Atom:
 delta_time = 0.003
 mass_argon = 39.948
 mol = 6.022 * (10 ** 23)
-sigma = 3.4 * (10 ** -10)
-epsilon = 1.65 * (10 ** -2)
+sigma = 3.4 * (10 ** -1) # nm
+epsilon = 9.93 * (10 ** -1) # g/mol * (nm^2)/(ps^2)
 T = 300
 sphere_radius = 30
 border_const = 10
@@ -103,7 +103,11 @@ def kineticEnergy():
   return energy
 
 def totalEnergy():
-  return (borderEnergy() + vdwEnergy() + kineticEnergy())
+  border = borderEnergy()
+  vdw = vdwEnergy()
+  kinetic = kineticEnergy()
+  print("{:12} - {:12} - {:12}: {:12}".format(border, vdw, kinetic, (border + vdw + kinetic)))
+  return (border + vdw + kinetic)
 
 # -------------------------
 
@@ -112,7 +116,8 @@ for i in range(2000):
     if atom.getDistance() > sphere_radius:
       elasticBorder(atom)
     verletCalculation(atom)
-  print("{}".format(totalEnergy()))
+  totalEnergy()
+  # print("{}".format(totalEnergy()))
   # print("{:5}: {}".format(i+1, totalEnergy()))
 
 # -------------------------
