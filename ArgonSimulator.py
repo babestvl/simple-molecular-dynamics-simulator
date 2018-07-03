@@ -24,8 +24,9 @@ class Atom:
 delta_time = 0.002
 mass_argon = 39.948
 mol = 6.022 * (10 ** 23)
-sigma = 3.4 * (10 ** -1) # nm
-epsilon = 9.93 * (10 ** -1) # (g/mol)*(nm^2)/(ps^2)
+sigma = 0.34
+# epsilon = 9.93 * (10 ** -1) # (g/mol)*(nm^2)/(ps^2)
+epsilon = 0.108
 T = 300
 sphere_radius = 30
 border_const = 5
@@ -63,8 +64,9 @@ def forceCalculation(atom):
       distance_square = np.sum(np.power(pos_diff, 2))
       distance = np.sqrt(distance_square)
       if distance <= critical_distance:
-        tmp_cal = np.power(sigma, 6) / np.power(distance, 7)
-        force = 24 * epsilon * tmp_cal * (2 * tmp_cal - 1) * pos_diff
+        # tmp_cal = np.power(sigma, 6) / np.power(distance, 7)
+        # force = 24 * epsilon * tmp_cal * (2 * tmp_cal - 1) * pos_diff
+        # Need new calculation formular
         atom.force_vector += force
         other.force_vector -= force
 
@@ -91,7 +93,7 @@ for i in range(20000):
       elasticBorder(atom)
     verletCalculation(atom)
   if i%5==0:
-    result_file.write("{}\n{}".format(len(atoms), 1))
+    result_file.write("{}\n{}\n".format(len(atoms), 1))
     for atom in atoms:
       result_file.write("{} {} {} {}\n".format("AR", atom.position_vector[0], atom.position_vector[1], atom.position_vector[2]))
 
