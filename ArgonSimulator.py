@@ -6,7 +6,7 @@ start_time = time.time()
 class Atom:
   def __init__(self):
     self.id = 0
-    self.position_vector = np.random.uniform(-30, 30, 3)
+    self.position_vector = np.random.uniform(-30, 30, 3) # Angstrom
     self.direction = np.random.random_integers(-3, 3, 3)
     self.momentum_vector = 0
     self.force_vector = 0
@@ -24,7 +24,7 @@ class Atom:
 delta_time = 0.003
 mass_argon = 39.948
 mol = 6.022 * (10 ** 23)
-sigma = 3.4 * (10 ** -10)
+sigma = 3.4 * (10 ** -1)
 epsilon = 1.65 * (10 ** -2)
 T = 300
 sphere_radius = 30
@@ -84,7 +84,7 @@ result_file = open("sample_argon.xyz","w")
 
 # -------------------------
 
-for i in range(2000):
+for i in range(20000):
   for atom in atoms:
     if atom.getDistance() > sphere_radius:
       elasticBorder(atom)
@@ -92,7 +92,7 @@ for i in range(2000):
   if i%5==0:
     result_file.write("{}\n{}\n".format(len(atoms), 1))
     for atom in atoms:
-      result_file.write("{} {} {} {}\n".format("Ar", atom.position_vector[0], atom.position_vector[1], atom.position_vector[2]))
+      result_file.write("{} {} {} {}\n".format("AR", atom.position_vector[0], atom.position_vector[1], atom.position_vector[2]))
 
 # -------------------------
 
