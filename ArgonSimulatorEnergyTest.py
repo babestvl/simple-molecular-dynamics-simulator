@@ -62,9 +62,7 @@ def forceCalculation(atom):
       distance_square = np.sum(np.power(pos_diff, 2))
       distance = np.sqrt(distance_square)
       if distance <= critical_distance:
-        # tmp_cal = np.power(sigma, 6) / np.power(distance, 7)
-        # force = 24 * epsilon * tmp_cal * (2 * tmp_cal - 1) * pos_diff
-        # Need new calculation formular
+        force = (((12 * C12) / np.power(distance, 14)) - ((6 * C6) / np.power(distance, 8))) * pos_diff
         atom.force_vector += force
         other.force_vector -= force
 
@@ -96,8 +94,7 @@ def vdwEnergy():
         pos_diff = other.position_vector - atom.position_vector
         distance_square = np.sum(np.power(pos_diff, 2))
         distance = np.sqrt(distance_square)
-        # energy += 4 * epsilon * (np.power(sigma/distance, 12) - np.power(sigma/distance, 6))
-        # Need new calculation formular
+        energy += (C12/np.power(distance, 12)) - (C6/np.power(distance, 6))
   return energy
 
 def kineticEnergy():
@@ -110,7 +107,6 @@ def totalEnergy():
   border = borderEnergy()
   vdw = vdwEnergy()
   kinetic = kineticEnergy()
-  # print("{:12} - {:12} - {:12}: {:12}".format(border, vdw, kinetic, (border + vdw + kinetic)))
   return (border + vdw + kinetic)
 
 # -------------------------
@@ -120,8 +116,6 @@ for i in range(2000):
     if atom.getDistance() > sphere_radius:
       elasticBorder(atom)
     verletCalculation(atom)
-  # totalEnergy()
-  # print("{}".format(totalEnergy()))
   print("{:5} {}".format(i+1, totalEnergy()))
 
 # -------------------------
