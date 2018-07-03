@@ -62,8 +62,9 @@ def forceCalculation(atom):
       distance_square = np.sum(np.power(pos_diff, 2))
       distance = np.sqrt(distance_square)
       if distance <= critical_distance:
-        tmp_cal = np.power(sigma, 6) / np.power(distance, 7)
-        force = 24 * epsilon * tmp_cal * (2 * tmp_cal - 1) * pos_diff
+        # tmp_cal = np.power(sigma, 6) / np.power(distance, 7)
+        # force = 24 * epsilon * tmp_cal * (2 * tmp_cal - 1) * pos_diff
+        # Need new calculation formular
         atom.force_vector += force
         other.force_vector -= force
 
@@ -95,7 +96,8 @@ def vdwEnergy():
         pos_diff = other.position_vector - atom.position_vector
         distance_square = np.sum(np.power(pos_diff, 2))
         distance = np.sqrt(distance_square)
-        energy += 4 * epsilon * (np.power(sigma/distance, 12) - np.power(sigma/distance, 6))
+        # energy += 4 * epsilon * (np.power(sigma/distance, 12) - np.power(sigma/distance, 6))
+        # Need new calculation formular
   return energy
 
 def kineticEnergy():
