@@ -21,11 +21,11 @@ class Atom:
     self.momentum_vector = self.direction * momentum_vector
 
 # Initial Values
-delta_time = 0.003
+delta_time = 0.002
 mass_argon = 39.948
 mol = 6.022 * (10 ** 23)
 sigma = 3.4 * (10 ** -1) # nm
-epsilon = 9.93 * (10 ** -1) # g/mol * (nm^2)/(ps^2)
+epsilon = 9.93 * (10 ** -1) # (g/mol)*(nm^2)/(ps^2)
 T = 300
 sphere_radius = 30
 border_const = 5
@@ -80,7 +80,8 @@ def verletCalculation(atom):
   atom.momentum_vector += 0.5 * delta_time * atom.force_vector
   atom.position_vector += delta_time * atom.momentum_vector / mass_argon
 
-result_file = open("sample_argon.xyz","w")
+# result_file = open("sample_argon.xyz","w")
+result_file = open("Test.xyz","w")
 
 # -------------------------
 
@@ -90,13 +91,13 @@ for i in range(20000):
       elasticBorder(atom)
     verletCalculation(atom)
   if i%5==0:
-    result_file.write("{}\n{}\n".format(len(atoms), 1))
+    result_file.write("{}\n{}".format(len(atoms), 1))
     for atom in atoms:
       result_file.write("{} {} {} {}\n".format("AR", atom.position_vector[0], atom.position_vector[1], atom.position_vector[2]))
 
 # -------------------------
 
-result_file.write("ENDMDL\n")
+result_file.write("END\n")
 result_file.close()
 
 print("--- %s seconds ---" % (time.time() - start_time))
