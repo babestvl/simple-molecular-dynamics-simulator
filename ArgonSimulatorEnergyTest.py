@@ -22,12 +22,14 @@ delta_time = 0.003
 mass_argon = 39.948
 mol = 6.022 * (10 ** 23)
 sigma = 3.4 * (10 ** -1) # nm
-epsilon = 9.93 * (10 ** -1) # g/mol * (nm^2)/(ps^2)
+epsilon = 9.93 * (10 ** -1) # g/mol * (nm^2)/(ps^2) 
 T = 300
 sphere_radius = 30
 border_const = 10
 critical_distance = 15
 Kb = 8.3 * (10 ** -3)
+C6 = 0.0062647225
+C12 = 9.847044e-6
 
 # Initial Atoms
 atoms = [Atom() for i in range(200)]
@@ -82,7 +84,7 @@ def borderEnergy():
   energy = 0
   for atom in atoms:
     if atom.getDistance() > sphere_radius:
-      energy += 0.5 * border_const * (atom.getDistance() - sphere_radius)
+      energy += 0.5 * border_const * np.power((atom.getDistance() - sphere_radius), 2)
   return energy
 
 def vdwEnergy():
@@ -106,7 +108,7 @@ def totalEnergy():
   border = borderEnergy()
   vdw = vdwEnergy()
   kinetic = kineticEnergy()
-  print("{:12} - {:12} - {:12}: {:12}".format(border, vdw, kinetic, (border + vdw + kinetic)))
+  # print("{:12} - {:12} - {:12}: {:12}".format(border, vdw, kinetic, (border + vdw + kinetic)))
   return (border + vdw + kinetic)
 
 # -------------------------
@@ -116,8 +118,8 @@ for i in range(2000):
     if atom.getDistance() > sphere_radius:
       elasticBorder(atom)
     verletCalculation(atom)
-  totalEnergy()
+  # totalEnergy()
   # print("{}".format(totalEnergy()))
-  # print("{:5}: {}".format(i+1, totalEnergy()))
+  print("{:5} {}".format(i+1, totalEnergy()))
 
 # -------------------------
