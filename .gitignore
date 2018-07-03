@@ -1,3 +1,4 @@
 .vscode
-*.xyz
 __pycache__/
+*.xyz
+*.txt
