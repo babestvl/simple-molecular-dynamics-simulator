@@ -1,7 +1,4 @@
 import numpy as np
-import time
-
-start_time = time.time()
 
 class Atom:
   def __init__(self):
@@ -28,7 +25,7 @@ sigma = 3.4 * (10 ** -10)
 epsilon = 1.65 * (10 ** -2)
 T = 300
 sphere_radius = 30
-border_const = 5
+border_const = 10
 critical_distance = 15
 Kb = 8.3 * (10 ** -3)
 
@@ -80,7 +77,33 @@ def verletCalculation(atom):
   atom.momentum_vector += 0.5 * delta_time * atom.force_vector
   atom.position_vector += delta_time * atom.momentum_vector / mass_argon
 
-result_file = open("sample_argon.xyz","w")
+# Testing part
+def borderEnergy():
+  energy = 0
+  for atom in atoms:
+    if atom.getDistance() > sphere_radius:
+      energy += 0.5 * border_const * (atom.getDistance() - sphere_radius)
+  return energy
+
+def vdwEnergy():
+  energy = 0
+  for atom in atoms:
+    for other in atoms:
+      if id(atom) != id(other):
+        pos_diff = other.position_vector - atom.position_vector
+        distance_square = np.sum(np.power(pos_diff, 2))
+        distance = np.sqrt(distance_square)
+        energy += 4 * epsilon * (np.power(sigma/distance, 12) - np.power(sigma/distance, 6))
+  return energy
+
+def kineticEnergy():
+  energy = 0
+  for atom in atoms:
+    energy += 0.5 * mass_argon * np.power(np.mean(atom.momentum_vector)/mass_argon, 2)
+  return energy
+
+def totalEnergy():
+  return (borderEnergy() + vdwEnergy() + kineticEnergy())
 
 # -------------------------
 
@@ -89,14 +112,7 @@ for i in range(2000):
     if atom.getDistance() > sphere_radius:
       elasticBorder(atom)
     verletCalculation(atom)
-  if i%5==0:
-    result_file.write("{}\n{}\n".format(len(atoms), 1))
-    for atom in atoms:
-      result_file.write("{} {} {} {}\n".format("Ar", atom.position_vector[0], atom.position_vector[1], atom.position_vector[2]))
+  print("{}".format(totalEnergy()))
+  # print("{:5}: {}".format(i+1, totalEnergy()))
 
 # -------------------------
-
-result_file.write("ENDMDL\n")
-result_file.close()
-
-print("--- %s seconds ---" % (time.time() - start_time))
