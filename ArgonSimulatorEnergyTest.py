@@ -23,7 +23,7 @@ mass_argon = 39.948
 mol = 6.022 * (10 ** 23)
 T = 300
 sphere_radius = 30
-border_const = 10
+border_const = 5
 critical_distance = 15
 Kb = 8.3 * (10 ** -3)
 C6 = 0.0062647225
@@ -90,7 +90,7 @@ def vdwEnergy():
   for atom in atoms:
     for other in atoms:
       if id(atom) != id(other):
-        pos_diff = other.position_vector - atom.position_vector
+        pos_diff = atom.position_vector - other.position_vector
         distance_square = np.sum(np.power(pos_diff, 2))
         distance = np.sqrt(distance_square)
         energy += (C12/np.power(distance, 12)) - (C6/np.power(distance, 6))
