@@ -21,8 +21,6 @@ class Atom:
 delta_time = 0.003
 mass_argon = 39.948
 mol = 6.022 * (10 ** 23)
-sigma = 3.4 * (10 ** -1) # nm
-epsilon = 9.93 * (10 ** -1) # g/mol * (nm^2)/(ps^2) 
 T = 300
 sphere_radius = 30
 border_const = 10
@@ -45,7 +43,7 @@ for i in range(0, len(atoms)):
   atoms[i].id = i
 
 # Initial Velocity and Momentum
-random_velocity = np.random.uniform(-5, 5, 3)
+random_velocity = np.random.uniform(-3, 3, 3)
 tmp = np.sqrt(np.power(random_velocity[0], 2) + np.power(random_velocity[1], 2) + np.power(random_velocity[2], 2))
 initial_velocity = np.sqrt((3 * Kb * T)/(mass_argon))
 velocity_vector = initial_velocity * (random_velocity / tmp)
@@ -58,7 +56,7 @@ for atom in atoms:
 def forceCalculation(atom):
   for other in atoms:
     if atom.id < other.id:
-      pos_diff = other.position_vector - atom.position_vector
+      pos_diff = atom.position_vector - other.position_vector
       distance_square = np.sum(np.power(pos_diff, 2))
       distance = np.sqrt(distance_square)
       if distance <= critical_distance:
@@ -74,9 +72,10 @@ def elasticBorder(atom):
 
 def verletCalculation(atom):
   atom.momentum_vector += 0.5 * delta_time * atom.force_vector
+  atom.position_vector += delta_time * atom.momentum_vector / mass_argon
+  atom.force_vector = 0
   forceCalculation(atom)
   atom.momentum_vector += 0.5 * delta_time * atom.force_vector
-  atom.position_vector += delta_time * atom.momentum_vector / mass_argon
 
 # Testing part
 def borderEnergy():
@@ -113,9 +112,9 @@ def totalEnergy():
 
 for i in range(2000):
   for atom in atoms:
+    verletCalculation(atom)
     if atom.getDistance() > sphere_radius:
       elasticBorder(atom)
-    verletCalculation(atom)
   print("{:5} {}".format(i+1, totalEnergy()))
 
 # -------------------------
