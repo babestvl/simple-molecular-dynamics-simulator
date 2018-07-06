@@ -25,8 +25,7 @@ delta_time = 0.002
 mass_argon = 39.948
 mol = 6.022 * (10 ** 23)
 sigma = 0.34
-# epsilon = 9.93 * (10 ** -1) # (g/mol)*(nm^2)/(ps^2)
-epsilon = 0.108
+epsilon = 0.993 
 T = 300
 sphere_radius = 30
 border_const = 5
@@ -47,7 +46,7 @@ for i in range(0, len(atoms)):
   atoms[i].id = i
 
 # Initial Velocity and Momentum
-random_velocity = np.random.uniform(-5, 5, 3)
+random_velocity = np.random.uniform(-3, 3, 3)
 tmp = np.sqrt(np.power(random_velocity[0], 2) + np.power(random_velocity[1], 2) + np.power(random_velocity[2], 2))
 initial_velocity = np.sqrt((3 * Kb * T)/(mass_argon))
 velocity_vector = initial_velocity * (random_velocity / tmp)
@@ -60,13 +59,13 @@ for atom in atoms:
 def forceCalculation(atom):
   for other in atoms:
     if atom.id < other.id:
-      pos_diff = other.position_vector - atom.position_vector
+      pos_diff = atom.position_vector - other.position_vector
       distance_square = np.sum(np.power(pos_diff, 2))
       distance = np.sqrt(distance_square)
       if distance <= critical_distance:
-        # tmp_cal = np.power(sigma, 6) / np.power(distance, 7)
-        # force = 24 * epsilon * tmp_cal * (2 * tmp_cal - 1) * pos_diff
-        # Need new calculation formular
+        x = np.power(sigma, 6) / np.power(distance, 8)
+        y = np.power(sigma, 6) / np.power(distance, 6)
+        force = 24 * epsilon * x * (2 * y - 1) * pos_diff
         atom.force_vector += force
         other.force_vector -= force
 
@@ -78,20 +77,20 @@ def elasticBorder(atom):
 
 def verletCalculation(atom):
   atom.momentum_vector += 0.5 * delta_time * atom.force_vector
+  atom.position_vector += delta_time * atom.momentum_vector / mass_argon
+  atom.force_vector = 0
   forceCalculation(atom)
   atom.momentum_vector += 0.5 * delta_time * atom.force_vector
-  atom.position_vector += delta_time * atom.momentum_vector / mass_argon
 
-# result_file = open("sample_argon.xyz","w")
-result_file = open("Test.xyz","w")
+result_file = open("sample_argon.xyz","w")
 
 # -------------------------
 
 for i in range(20000):
   for atom in atoms:
+    verletCalculation(atom)
     if atom.getDistance() > sphere_radius:
       elasticBorder(atom)
-    verletCalculation(atom)
   if i%5==0:
     result_file.write("{}\n{}\n".format(len(atoms), 1))
     for atom in atoms:
