@@ -86,7 +86,7 @@ result_file = open("sample_argon.xyz","w")
 
 # -------------------------
 
-for i in range(20000):
+for i in range(50000):
   for atom in atoms:
     verletCalculation(atom)
     if atom.getDistance() > sphere_radius:
