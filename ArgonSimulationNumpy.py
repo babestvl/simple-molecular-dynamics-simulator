@@ -3,23 +3,6 @@ import time
 
 start_time = time.time()
 
-class Atom:
-  def __init__(self):
-    self.id = 0
-    self.position_vector = np.random.uniform(-30, 30, 3) # Angstrom
-    self.direction = np.random.random_integers(-3, 3, 3)
-    self.momentum_vector = 0
-    self.force_vector = 0
-    
-  def getDistance(self):
-    vector_square = np.power(self.position_vector,2)
-    r_square = np.sum(vector_square)
-    distance = np.sqrt(r_square)
-    return distance
-
-  def setInitialMomentumVector(self, momentum_vector):
-    self.momentum_vector = self.direction * momentum_vector
-
 # Initial Values
 delta_time = 0.002
 mass_argon = 39.948
@@ -28,22 +11,53 @@ sigma = 0.34
 epsilon = 0.993 
 T = 300
 sphere_radius = 30
-border_const = 5
+spring_const = 10
 critical_distance = 15
 Kb = 8.3 * (10 ** -3)
 
+def getDistance():
+  global position_vectors
+  vector_square = np.power(position_vectors, 2)
+  r_square = np.sum(vector_square, axis=1)
+  distance = np.sqrt(r_square)
+  print(distance)
+  return distance
+
+def forceCalculation():
+  for j in range(amount):
+    if i < j:
+      pos_diff = position_vectors[i] - position_vectors[j]
+      distance_square = np.sum(np.power(pos_diff, 2))
+      distance = np.sqrt(distance_square)
+      if distance <= critical_distance:
+        x = np.power(sigma, 6) / np.power(distance, 8)
+        y = np.power(sigma, 6) / np.power(distance, 6)
+        force = 24 * epsilon * x * (2 * y - 1) * pos_diff
+        force_vectors[i] = [x + force for x in force_vectors[i]]
+        force_vectors[j] = [x - force for x in force_vectors[j]]
+  elasticBorder()
+
+def elasticBorder(i):
+  distance = getDistance()
+  if distance > sphere_radius:
+    border_force = (((-spring_const) * (distance - sphere_radius)) / distance) * position_vector[i]
+    force_vectors[i] = [x + border_force for x in force_vectors[i]]
+
+def verletCalculation():
+  global momentum_vectors, position_vectors, force_vectors
+  momentum_vectors += 0.5 * delta_time * force_vectors
+  position_vectors += delta_time * momentum_vectors / mass_argon
+  force_vectors = 0
+  forceCalculation()
+  momentum_vectors += 0.5 * delta_time * force_vectors
+
+
 # Initial Atoms
-atoms = [Atom() for i in range(200)]
-
-# Delete unusable atoms
-usable_atoms = []
-for atom in atoms:
-  if atom.getDistance() <= sphere_radius:
-    usable_atoms.append(atom)
-atoms = usable_atoms
-
-for i in range(0, len(atoms)):
-  atoms[i].id = i
+position_vectors = np.random.uniform(low=-30, high=30, size=(200, 3))
+distance = getDistance()
+position_vectors = np.delete(position_vectors, np.argwhere(distance > sphere_radius), 0)
+amount = len(position_vectors)
+force_vectors = np.zeros(shape=(amount, 3))
 
 # Initial Velocity and Momentum
 random_velocity = np.random.uniform(-3, 3, 3)
@@ -53,52 +67,23 @@ velocity_vector = initial_velocity * (random_velocity / tmp)
 momentum_vector = mass_argon * velocity_vector
 
 # Apply Initial Momentum to Direction
-for atom in atoms:
-  atom.setInitialMomentumVector(momentum_vector)
+directions = np.random.uniform(low=-3, high=3, size=(amount, 3))
+momentum_vectors = np.tile(momentum_vector, [amount, 1]) * directions
 
-def forceCalculation(atom):
-  for other in atoms:
-    if atom.id < other.id:
-      pos_diff = atom.position_vector - other.position_vector
-      distance_square = np.sum(np.power(pos_diff, 2))
-      distance = np.sqrt(distance_square)
-      if distance <= critical_distance:
-        x = np.power(sigma, 6) / np.power(distance, 8)
-        y = np.power(sigma, 6) / np.power(distance, 6)
-        force = 24 * epsilon * x * (2 * y - 1) * pos_diff
-        atom.force_vector += force
-        other.force_vector -= force
-
-def elasticBorder(atom):
-  atom_distance = atom.getDistance()
-  border_force = (((-border_const) * (atom_distance - sphere_radius)) / atom_distance) * atom.position_vector
-  border_force *= delta_time
-  atom.momentum_vector += border_force
-
-def verletCalculation(atom):
-  atom.momentum_vector += 0.5 * delta_time * atom.force_vector
-  atom.position_vector += delta_time * atom.momentum_vector / mass_argon
-  atom.force_vector = 0
-  forceCalculation(atom)
-  atom.momentum_vector += 0.5 * delta_time * atom.force_vector
-
-result_file = open("sample_argon.xyz","w")
+# result_file = open("Test.xyz","w")
 
 # -------------------------
 
-for i in range(50000):
-  for atom in atoms:
-    verletCalculation(atom)
-    if atom.getDistance() > sphere_radius:
-      elasticBorder(atom)
-  if i%5==0:
-    result_file.write("{}\n{}\n".format(len(atoms), 1))
-    for atom in atoms:
-      result_file.write("{} {} {} {}\n".format("AR", atom.position_vector[0], atom.position_vector[1], atom.position_vector[2]))
+for i in range(2000):
+  verletCalculation()
+  # if i%5==0:
+  #   result_file.write("{}\n{}\n".format(amount, 1))
+  #   for pos in position_vectors:
+  #     result_file.write("{} {} {} {}\n".format("AR", pos[0], pos[1], pos[2]))
 
 # -------------------------
 
-result_file.write("END\n")
-result_file.close()
+# result_file.write("END\n")
+# result_file.close()
 
 print("--- %s seconds ---" % (time.time() - start_time))
