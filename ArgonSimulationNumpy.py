@@ -20,34 +20,36 @@ def getDistance():
   vector_square = np.power(position_vectors, 2)
   r_square = np.sum(vector_square, axis=1)
   distance = np.sqrt(r_square)
-  print(distance)
   return distance
 
 def forceCalculation():
-  for j in range(amount):
-    if i < j:
-      pos_diff = position_vectors[i] - position_vectors[j]
-      distance_square = np.sum(np.power(pos_diff, 2))
-      distance = np.sqrt(distance_square)
-      if distance <= critical_distance:
-        x = np.power(sigma, 6) / np.power(distance, 8)
-        y = np.power(sigma, 6) / np.power(distance, 6)
-        force = 24 * epsilon * x * (2 * y - 1) * pos_diff
-        force_vectors[i] = [x + force for x in force_vectors[i]]
-        force_vectors[j] = [x - force for x in force_vectors[j]]
+  global position_vectors, amount
+  # for j in range(amount):
+  #   if i < j:
+  #     pos_diff = position_vectors[i] - position_vectors[j]
+  #     distance_square = np.sum(np.power(pos_diff, 2))
+  #     distance = np.sqrt(distance_square)
+  #     if distance <= critical_distance:
+  #       x = np.power(sigma, 6) / np.power(distance, 8)
+  #       y = np.power(sigma, 6) / np.power(distance, 6)
+  #       force = 24 * epsilon * x * (2 * y - 1) * pos_diff
+  #       force_vectors += force
   elasticBorder()
 
-def elasticBorder(i):
+def elasticBorder():
+  global sphere_radius, spring_const, position_vectors
   distance = getDistance()
-  if distance > sphere_radius:
-    border_force = (((-spring_const) * (distance - sphere_radius)) / distance) * position_vector[i]
-    force_vectors[i] = [x + border_force for x in force_vectors[i]]
+  pos_diff = distance - sphere_radius
+  tmp = np.repeat(((-spring_const) * (pos_diff)) / distance, 3).reshape(amount, 3)
+  index = np.argwhere(distance > sphere_radius)
+  index = np.reshape(index, len(index))
+  force_vectors[index] += (tmp[index] * position_vectors[index])
 
 def verletCalculation():
   global momentum_vectors, position_vectors, force_vectors
   momentum_vectors += 0.5 * delta_time * force_vectors
   position_vectors += delta_time * momentum_vectors / mass_argon
-  force_vectors = 0
+  force_vectors.fill(0)
   forceCalculation()
   momentum_vectors += 0.5 * delta_time * force_vectors
 
@@ -74,8 +76,8 @@ momentum_vectors = np.tile(momentum_vector, [amount, 1]) * directions
 
 # -------------------------
 
-for i in range(2000):
-  verletCalculation()
+# for i in range(2000):
+verletCalculation()
   # if i%5==0:
   #   result_file.write("{}\n{}\n".format(amount, 1))
   #   for pos in position_vectors:
