@@ -6,14 +6,14 @@ start_time = time.time()
 # Initial Values
 delta_time = 0.002
 mass_argon = 39.948
-mol = 6.022 * (10 ** 23)
+mol = 6.022e23
 sigma = 0.34
 epsilon = 0.993 
 T = 300
 sphere_radius = 30
 spring_const = 10
 critical_distance = 15
-Kb = 8.3 * (10 ** -3)
+Kb = 8.3e-3
 
 def getDistance():
   global position_vectors
@@ -24,16 +24,18 @@ def getDistance():
 
 def forceCalculation():
   global position_vectors, amount
-  # for j in range(amount):
-  #   if i < j:
-  #     pos_diff = position_vectors[i] - position_vectors[j]
-  #     distance_square = np.sum(np.power(pos_diff, 2))
-  #     distance = np.sqrt(distance_square)
-  #     if distance <= critical_distance:
-  #       x = np.power(sigma, 6) / np.power(distance, 8)
-  #       y = np.power(sigma, 6) / np.power(distance, 6)
-  #       force = 24 * epsilon * x * (2 * y - 1) * pos_diff
-  #       force_vectors += force
+  for i in range(amount):
+    for j in range(amount):
+      if i < j:
+        pos_diff = position_vectors[i] - position_vectors[j]
+        distance_square = np.sum(np.power(pos_diff, 2))
+        distance = np.sqrt(distance_square)
+        if distance <= critical_distance:
+          x = np.power(sigma, 6) / np.power(distance, 8)
+          y = np.power(sigma, 6) / np.power(distance, 6)
+          force = 24 * epsilon * x * (2 * y - 1) * pos_diff
+          force_vectors[i] += force
+          force_vectors[j] -= force
   elasticBorder()
 
 def elasticBorder():
@@ -53,8 +55,7 @@ def verletCalculation():
   forceCalculation()
   momentum_vectors += 0.5 * delta_time * force_vectors
 
-
-# Initial Atoms
+# Initial Atoms and Force
 position_vectors = np.random.uniform(low=-30, high=30, size=(200, 3))
 distance = getDistance()
 position_vectors = np.delete(position_vectors, np.argwhere(distance > sphere_radius), 0)
@@ -72,20 +73,20 @@ momentum_vector = mass_argon * velocity_vector
 directions = np.random.uniform(low=-3, high=3, size=(amount, 3))
 momentum_vectors = np.tile(momentum_vector, [amount, 1]) * directions
 
-# result_file = open("Test.xyz","w")
+result_file = open("Test.xyz","w")
 
 # -------------------------
 
-# for i in range(2000):
-verletCalculation()
-  # if i%5==0:
-  #   result_file.write("{}\n{}\n".format(amount, 1))
-  #   for pos in position_vectors:
-  #     result_file.write("{} {} {} {}\n".format("AR", pos[0], pos[1], pos[2]))
+for i in range(20000):
+  verletCalculation()
+  if i%5==0:
+    result_file.write("{}\n{}\n".format(amount, 1))
+    for pos in position_vectors:
+      result_file.write("{} {} {} {}\n".format("AR", pos[0], pos[1], pos[2]))
 
 # -------------------------
 
-# result_file.write("END\n")
-# result_file.close()
+result_file.write("END\n")
+result_file.close()
 
 print("--- %s seconds ---" % (time.time() - start_time))
