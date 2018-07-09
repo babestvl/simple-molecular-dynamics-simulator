@@ -2,3 +2,5 @@
 __pycache__/
 *.xyz
 *.txt
+*.dat
+.DS_Store

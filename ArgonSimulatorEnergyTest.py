@@ -23,7 +23,7 @@ mass_argon = 39.948
 mol = 6.022 * (10 ** 23)
 T = 300
 sphere_radius = 30
-border_const = 5
+spring_const = 1
 critical_distance = 15
 Kb = 8.3 * (10 ** -3)
 C6 = 0.0062647225
@@ -63,12 +63,14 @@ def forceCalculation(atom):
         force = (((12 * C12) / np.power(distance, 14)) - ((6 * C6) / np.power(distance, 8))) * pos_diff
         atom.force_vector += force
         other.force_vector -= force
+  elasticBorder(atom)
 
 def elasticBorder(atom):
   atom_distance = atom.getDistance()
-  border_force = (((-border_const) * (atom_distance - sphere_radius)) / atom_distance) * atom.position_vector
-  border_force *= delta_time
-  atom.momentum_vector += border_force
+  if atom_distance > sphere_radius:
+    print("elast {}: {} {}".format(atom.id, atom_distance, atom.position_vector))
+    border_force = ((-1 * spring_const) * (atom_distance - sphere_radius) / atom_distance) * atom.position_vector
+    atom.force_vector += border_force
 
 def verletCalculation(atom):
   atom.momentum_vector += 0.5 * delta_time * atom.force_vector
@@ -82,7 +84,7 @@ def borderEnergy():
   energy = 0
   for atom in atoms:
     if atom.getDistance() > sphere_radius:
-      energy += 0.5 * border_const * np.power((atom.getDistance() - sphere_radius), 2)
+      energy += 0.5 * spring_const * np.power((atom.getDistance() - sphere_radius), 2)
   return energy
 
 def vdwEnergy():
@@ -106,15 +108,13 @@ def totalEnergy():
   border = borderEnergy()
   vdw = vdwEnergy()
   kinetic = kineticEnergy()
-  return (border + vdw + kinetic)
+  # print("{:5} {} {} {}: {}".format(i+1, border, vdw, kinetic, border+vdw+kinetic))
 
 # -------------------------
 
 for i in range(2000):
   for atom in atoms:
     verletCalculation(atom)
-    if atom.getDistance() > sphere_radius:
-      elasticBorder(atom)
-  print("{:5} {}".format(i+1, totalEnergy()))
+  totalEnergy()
 
 # -------------------------

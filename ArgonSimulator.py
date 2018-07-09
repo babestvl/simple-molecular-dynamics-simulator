@@ -28,7 +28,7 @@ sigma = 0.34
 epsilon = 0.993 
 T = 300
 sphere_radius = 30
-border_const = 5
+spring_const = 10
 critical_distance = 15
 Kb = 8.3 * (10 ** -3)
 
@@ -68,12 +68,13 @@ def forceCalculation(atom):
         force = 24 * epsilon * x * (2 * y - 1) * pos_diff
         atom.force_vector += force
         other.force_vector -= force
+  elasticBorder(atom)
 
 def elasticBorder(atom):
   atom_distance = atom.getDistance()
-  border_force = (((-border_const) * (atom_distance - sphere_radius)) / atom_distance) * atom.position_vector
-  border_force *= delta_time
-  atom.momentum_vector += border_force
+  if atom_distance > sphere_radius:
+    border_force = (((-spring_const) * (atom_distance - sphere_radius)) / atom_distance) * atom.position_vector
+    atom.force_vector += border_force
 
 def verletCalculation(atom):
   atom.momentum_vector += 0.5 * delta_time * atom.force_vector
@@ -82,15 +83,13 @@ def verletCalculation(atom):
   forceCalculation(atom)
   atom.momentum_vector += 0.5 * delta_time * atom.force_vector
 
-result_file = open("sample_argon.xyz","w")
+result_file = open("sample_argon2.xyz","w")
 
 # -------------------------
 
-for i in range(50000):
+for i in range(20000):
   for atom in atoms:
     verletCalculation(atom)
-    if atom.getDistance() > sphere_radius:
-      elasticBorder(atom)
   if i%5==0:
     result_file.write("{}\n{}\n".format(len(atoms), 1))
     for atom in atoms:
