@@ -24,7 +24,6 @@ def getDistance():
 
 def forceCalculation():
   global position_vectors, amount
-  
   for i in range(amount):
     for j in range(amount):
       if i < j:
