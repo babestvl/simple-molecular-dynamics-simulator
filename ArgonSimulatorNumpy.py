@@ -29,16 +29,14 @@ def forceCalculation():
   diff = tiled - trans
   for i in range(amount):
     pos_diff = np.reshape(diff[i].flatten('F'), (-1, 3))
-    dist = np.sqrt(np.sum(np.power(pos_diff, 2), axis=1))
-    for j in range(amount):
-      if i < j:
-        distance = dist[j]
-        if distance <= critical_distance:
-          x = np.power(sigma, 6) / np.power(distance, 8)
-          y = np.power(sigma, 6) / np.power(distance, 6)
-          force = 24 * epsilon * x * (2 * y - 1) * pos_diff[j]
-          force_vectors[i] += force
-          force_vectors[j] -= force
+    distance = np.sqrt(np.sum(np.power(pos_diff, 2), axis=1))
+    for j in range(i+1, amount):    
+      if distance[j] <= critical_distance:
+        x = np.power(sigma, 6) / np.power(distance[j], 8)
+        y = np.power(sigma, 6) / np.power(distance[j], 6)
+        force = 24 * epsilon * x * (2 * y - 1) * pos_diff[j]
+        force_vectors[i] += force
+        force_vectors[j] -= force
   elasticBorder()
 
 def elasticBorder():
