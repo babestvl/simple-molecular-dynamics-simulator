@@ -21,40 +21,16 @@ class Atom:
     self.momentum_vector = self.direction * momentum_vector
 
 # Initial Values
-delta_time = 0.002
+delta_time = 0.003
 mass_argon = 39.948
-mol = 6.022 * (10 ** 23)
+mol = 6.022e23
 sigma = 0.34
 epsilon = 0.993 
 T = 300
 sphere_radius = 30
 spring_const = 10
 critical_distance = 15
-Kb = 8.3 * (10 ** -3)
-
-# Initial Atoms
-atoms = [Atom() for i in range(200)]
-
-# Delete unusable atoms
-usable_atoms = []
-for atom in atoms:
-  if atom.getDistance() <= sphere_radius:
-    usable_atoms.append(atom)
-atoms = usable_atoms
-
-for i in range(0, len(atoms)):
-  atoms[i].id = i
-
-# Initial Velocity and Momentum
-random_velocity = np.random.uniform(-3, 3, 3)
-tmp = np.sqrt(np.power(random_velocity[0], 2) + np.power(random_velocity[1], 2) + np.power(random_velocity[2], 2))
-initial_velocity = np.sqrt((3 * Kb * T)/(mass_argon))
-velocity_vector = initial_velocity * (random_velocity / tmp)
-momentum_vector = mass_argon * velocity_vector
-
-# Apply Initial Momentum to Direction
-for atom in atoms:
-  atom.setInitialMomentumVector(momentum_vector)
+Kb = 8.3e-3
 
 def forceCalculation(atom):
   for other in atoms:
@@ -83,7 +59,31 @@ def verletCalculation(atom):
   forceCalculation(atom)
   atom.momentum_vector += 0.5 * delta_time * atom.force_vector
 
-result_file = open("sample_argon2.xyz","w")
+# Initial Atoms
+atoms = [Atom() for i in range(200)]
+
+# Delete unusable atoms
+usable_atoms = []
+for atom in atoms:
+  if atom.getDistance() <= sphere_radius:
+    usable_atoms.append(atom)
+atoms = usable_atoms
+
+for i in range(0, len(atoms)):
+  atoms[i].id = i
+
+# Initial Velocity and Momentum
+random_velocity = np.random.uniform(-3, 3, 3)
+tmp = np.sqrt(np.power(random_velocity[0], 2) + np.power(random_velocity[1], 2) + np.power(random_velocity[2], 2))
+initial_velocity = np.sqrt((3 * Kb * T)/(mass_argon))
+velocity_vector = initial_velocity * (random_velocity / tmp)
+momentum_vector = mass_argon * velocity_vector
+
+# Apply Initial Momentum to Direction
+for atom in atoms:
+  atom.setInitialMomentumVector(momentum_vector)
+
+result_file = open("sample_argon.xyz","w")
 
 # -------------------------
 

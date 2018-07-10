@@ -4,7 +4,7 @@ import time
 start_time = time.time()
 
 # Initial Values
-delta_time = 0.002
+delta_time = 0.003
 mass_argon = 39.948
 mol = 6.022e23
 sigma = 0.34
