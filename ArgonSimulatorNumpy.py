@@ -24,12 +24,16 @@ def getDistance():
 
 def forceCalculation():
   global position_vectors, amount
+  tiled = np.tile(np.expand_dims(position_vectors, 2), amount)
+  trans = np.transpose(position_vectors)
+  diff = tiled - trans
   for i in range(amount):
+    pos = np.reshape(diff[i].flatten('F'), (-1, 3))
+    dist = np.sqrt(np.sum(np.power(pos, 2), axis=1))
     for j in range(amount):
       if i < j:
-        pos_diff = position_vectors[i] - position_vectors[j]
-        distance_square = np.sum(np.power(pos_diff, 2))
-        distance = np.sqrt(distance_square)
+        pos_diff = pos[j]
+        distance = dist[j]
         if distance <= critical_distance:
           x = np.power(sigma, 6) / np.power(distance, 8)
           y = np.power(sigma, 6) / np.power(distance, 6)
