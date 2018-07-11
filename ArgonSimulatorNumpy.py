@@ -30,7 +30,7 @@ def forceCalculation():
   for i in range(amount):
     pos_diff = np.reshape(diff[i].flatten('F'), (-1, 3))
     distance = np.sqrt(np.sum(np.power(pos_diff, 2), axis=1))
-    for j in range(i+1, amount):    
+    for j in range(i+1, amount):
       if distance[j] <= critical_distance:
         x = np.power(sigma, 6) / np.power(distance[j], 8)
         y = np.power(sigma, 6) / np.power(distance[j], 6)
