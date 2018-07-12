@@ -6,7 +6,8 @@ cimport numpy as np
 start_time = time.time()
 
 # Initial Values
-ctypedef np.double_t DTYPE_t
+ctypedef np.double_t DOUBLE_t
+ctypedef np.long_t LONG_t
 cdef float delta_time = 0.003
 cdef float mass_argon = 39.948
 cdef float mol = 6.022e23
@@ -20,9 +21,9 @@ cdef int critical_distance = 15
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-cdef getDistance(np.ndarray[DTYPE_t, ndim=2] position_vectors):
-  cdef np.ndarray[DTYPE_t, ndim=2] vector_square
-  cdef np.ndarray[DTYPE_t, ndim=1] r_square, distance
+cdef getDistance(np.ndarray[DOUBLE_t, ndim=2] position_vectors):
+  cdef np.ndarray[DOUBLE_t, ndim=2] vector_square
+  cdef np.ndarray[DOUBLE_t, ndim=1] r_square, distance
   vector_square = np.power(position_vectors, 2)
   r_square = np.sum(vector_square, axis=1)
   distance = np.sqrt(r_square)
@@ -30,10 +31,10 @@ cdef getDistance(np.ndarray[DTYPE_t, ndim=2] position_vectors):
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-cdef forceCalculation(np.ndarray[DTYPE_t, ndim=2] position_vectors, np.ndarray[DTYPE_t, ndim=2] force_vectors, int amount):
-  cdef np.ndarray[DTYPE_t, ndim=3] tiled, diff
-  cdef np.ndarray[DTYPE_t, ndim=2] trans, pos_diff
-  cdef np.ndarray[DTYPE_t, ndim=1] distance, force
+cdef forceCalculation(np.ndarray[DOUBLE_t, ndim=2] position_vectors, np.ndarray[DOUBLE_t, ndim=2] force_vectors, int amount):
+  cdef np.ndarray[DOUBLE_t, ndim=3] tiled, diff
+  cdef np.ndarray[DOUBLE_t, ndim=2] trans, pos_diff
+  cdef np.ndarray[DOUBLE_t, ndim=1] distance, force
   cdef np.float64_t x, y
   cdef int i, j
   tiled = np.tile(np.expand_dims(position_vectors, 2), amount)
@@ -53,12 +54,12 @@ cdef forceCalculation(np.ndarray[DTYPE_t, ndim=2] position_vectors, np.ndarray[D
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-cdef elasticBorder(np.ndarray[DTYPE_t, ndim=2] position_vectors, np.ndarray[DTYPE_t, ndim=2] force_vectors, int amount):
+cdef elasticBorder(np.ndarray[DOUBLE_t, ndim=2] position_vectors, np.ndarray[DOUBLE_t, ndim=2] force_vectors, int amount):
   global sphere_radius, spring_const
-  cdef np.ndarray[DTYPE_t, ndim=2] tmp
-  cdef np.ndarray[DTYPE_t, ndim=1] distance, pos_diff
-  cdef np.ndarray[np.long_t, ndim=2] indexs
-  cdef np.ndarray[np.long_t, ndim=1] index
+  cdef np.ndarray[DOUBLE_t, ndim=2] tmp
+  cdef np.ndarray[DOUBLE_t, ndim=1] distance, pos_diff
+  cdef np.ndarray[LONG_t, ndim=2] indexs
+  cdef np.ndarray[LONG_t, ndim=1] index
   distance = getDistance(position_vectors)
   pos_diff = distance - sphere_radius
   tmp = np.repeat(((-spring_const) * (pos_diff)) / distance, 3).reshape(amount, 3)
@@ -68,7 +69,7 @@ cdef elasticBorder(np.ndarray[DTYPE_t, ndim=2] position_vectors, np.ndarray[DTYP
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-cdef verletCalculation(np.ndarray[DTYPE_t, ndim=2] position_vectors, np.ndarray[DTYPE_t, ndim=2] force_vectors,np.ndarray[DTYPE_t, ndim=2] momentum_vectors , int amount):
+cdef verletCalculation(np.ndarray[DOUBLE_t, ndim=2] position_vectors, np.ndarray[DOUBLE_t, ndim=2] force_vectors, np.ndarray[DOUBLE_t, ndim=2] momentum_vectors , int amount):
   momentum_vectors += 0.5 * delta_time * force_vectors
   position_vectors += delta_time * momentum_vectors / mass_argon
   force_vectors.fill(0)
@@ -79,8 +80,8 @@ cdef verletCalculation(np.ndarray[DTYPE_t, ndim=2] position_vectors, np.ndarray[
 @cython.wraparound(False)
 cpdef main(frame):
   global start_time
-  cdef np.ndarray[DTYPE_t, ndim=2] position_vectors, force_vectors, momentum_vectors, directions
-  cdef np.ndarray[DTYPE_t, ndim=1] random_velocity, velocity_vector, momentum_vector
+  cdef np.ndarray[DOUBLE_t, ndim=2] position_vectors, force_vectors, momentum_vectors, directions
+  cdef np.ndarray[DOUBLE_t, ndim=1] random_velocity, velocity_vector, momentum_vector
   cdef np.float64_t tmp
   cdef double initial_velocity
   cdef int amount, i
