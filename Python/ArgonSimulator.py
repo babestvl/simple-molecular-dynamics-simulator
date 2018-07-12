@@ -83,7 +83,7 @@ momentum_vector = mass_argon * velocity_vector
 for atom in atoms:
   atom.setInitialMomentumVector(momentum_vector)
 
-result_file = open("sample_argon.xyz","w")
+result_file = open("out/sample_argon.xyz","w")
 
 # -------------------------
 
