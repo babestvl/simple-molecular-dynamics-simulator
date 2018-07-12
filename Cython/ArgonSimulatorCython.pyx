@@ -20,9 +20,9 @@ cdef int critical_distance = 15
 @cython.boundscheck(False)
 @cython.wraparound(False)
 cdef getDistance(np.ndarray[np.double_t, ndim=2] position_vectors):
-  vector_square = np.power(position_vectors, 2)
-  r_square = np.sum(vector_square, axis=1)
-  distance = np.sqrt(r_square)
+  cdef np.ndarray[np.double_t, ndim=2] vector_square = np.power(position_vectors, 2)
+  cdef np.ndarray[np.double_t, ndim=1] r_square = np.sum(vector_square, axis=1)
+  cdef np.ndarray[np.double_t, ndim=1] distance = np.sqrt(r_square)
   return distance
 
 @cython.boundscheck(False)
@@ -43,8 +43,8 @@ cdef forceCalculation(np.ndarray[np.double_t, ndim=2] position_vectors, np.ndarr
         x = np.power(sigma, 6) / np.power(distance[j], 8)
         y = np.power(sigma, 6) / np.power(distance[j], 6)
         force = 24 * epsilon * x * (2 * y - 1) * pos_diff[j]
-        force_vectors[i] = force_vectors[i] + force
-        force_vectors[j] = force_vectors[j] - force
+        force_vectors[i] += force
+        force_vectors[j] -= force
   elasticBorder(position_vectors, force_vectors, amount)
 
 @cython.boundscheck(False)
@@ -52,19 +52,18 @@ cdef forceCalculation(np.ndarray[np.double_t, ndim=2] position_vectors, np.ndarr
 cdef elasticBorder(np.ndarray[np.double_t, ndim=2] position_vectors, np.ndarray[np.double_t, ndim=2] force_vectors, int amount):
   global sphere_radius, spring_const
   cdef np.ndarray[np.double_t, ndim=1] distance = getDistance(position_vectors)
-  cdef np.ndarray[np.double_t, ndim=1] pos_diff = distance - sphere_radius
-  cdef np.ndarray[np.double_t, ndim=2] tmp = np.repeat(((-spring_const) * (pos_diff)) / distance, 3).reshape(amount, 3)
-  cdef np.ndarray[np.long_t, ndim=2] indexs = np.argwhere(distance > sphere_radius)
+  cdef np.double_t[::1] pos_diff = np.subtract(distance, sphere_radius)
+  cdef np.ndarray[np.double_t, ndim=2] tmp = np.repeat(np.divide(np.multiply(-spring_const, pos_diff), distance), 3).reshape(amount, 3)
+  cdef np.long_t[:,::1] indexs = np.argwhere(distance > sphere_radius)
   cdef np.ndarray[np.long_t, ndim=1] index = np.reshape(indexs, len(indexs))
-  force_vectors[index] = force_vectors[index] + (tmp[index] * position_vectors[index])
+  force_vectors[index] = np.add(force_vectors[index], np.multiply(tmp[index], position_vectors[index]))
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
 cdef verletCalculation(np.ndarray[np.double_t, ndim=2] position_vectors, np.ndarray[np.double_t, ndim=2] momentum_vectors, np.ndarray[np.double_t, ndim=2] force_vectors, int amount):
   momentum_vectors += np.multiply(0.5, np.multiply(delta_time, force_vectors))
   position_vectors += np.divide(np.multiply(delta_time, momentum_vectors), mass_argon)
-  cdef np.ndarray[np.double_t, ndim=2] fvs = np.zeros(shape=(amount, 3))
-  force_vectors = fvs
+  force_vectors.fill(0)
   forceCalculation(position_vectors, force_vectors, amount)
   momentum_vectors += np.multiply(0.5, np.multiply(delta_time, force_vectors))
 
@@ -75,21 +74,21 @@ cpdef main(frame):
 
   # Initial Atoms and Force
   cdef np.ndarray[np.double_t, ndim=2] position_vectors = np.random.uniform(low=-30, high=30, size=(200, 3))
-  cdef distance = getDistance(position_vectors)
+  cdef np.ndarray[np.double_t, ndim=1] distance = getDistance(position_vectors)
   position_vectors = np.delete(position_vectors, np.argwhere(distance > sphere_radius), 0)
   cdef int amount = len(position_vectors)
   cdef np.ndarray[np.double_t, ndim=2] force_vectors = np.zeros(shape=(amount, 3))
 
   # Initial Velocity and Momentum
-  cdef np.double_t[:] random_velocity = np.random.uniform(-3, 3, 3)
+  cdef np.double_t[::1] random_velocity = np.random.uniform(-3, 3, 3)
   cdef np.float64_t tmp = np.sqrt(np.power(random_velocity[0], 2) + np.power(random_velocity[1], 2) + np.power(random_velocity[2], 2))
   cdef double initial_velocity = np.sqrt((3 * Kb * T)/(mass_argon))
-  cdef np.double_t[:] velocity_vector = np.multiply(initial_velocity, np.divide(random_velocity, tmp))
-  cdef np.double_t[:] momentum_vector = np.multiply(mass_argon, velocity_vector)
+  cdef np.double_t[::1] velocity_vector = np.multiply(initial_velocity, np.divide(random_velocity, tmp))
+  cdef np.double_t[::1] momentum_vector = np.multiply(mass_argon, velocity_vector)
 
   # Apply Initial Momentum to Direction
-  cdef np.ndarray[np.double_t, ndim=2] directions = np.random.uniform(low=-3, high=3, size=(amount, 3))
-  cdef np.ndarray[np.double_t, ndim=2] momentum_vectors = np.tile(momentum_vector, [amount, 1]) * directions
+  cdef np.double_t[:,::1] directions = np.random.uniform(low=-3, high=3, size=(amount, 3))
+  cdef np.ndarray[np.double_t, ndim=2] momentum_vectors = np.multiply(np.tile(momentum_vector, [amount, 1]), directions)
   result_file = open("out/Test.xyz","w")
   cdef int i
   for i in range(frame):
