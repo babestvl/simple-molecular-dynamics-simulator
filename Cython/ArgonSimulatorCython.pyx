@@ -52,9 +52,9 @@ cdef forceCalculation(np.ndarray[np.double_t, ndim=2] position_vectors, np.ndarr
 cdef elasticBorder(np.ndarray[np.double_t, ndim=2] position_vectors, np.ndarray[np.double_t, ndim=2] force_vectors, int amount):
   global sphere_radius, spring_const
   cdef np.ndarray[np.double_t, ndim=1] distance = getDistance(position_vectors)
-  cdef np.double_t[::1] pos_diff = np.subtract(distance, sphere_radius)
+  cdef np.ndarray[np.double_t, ndim=1] pos_diff = np.subtract(distance, sphere_radius)
   cdef np.ndarray[np.double_t, ndim=2] tmp = np.repeat(np.divide(np.multiply(-spring_const, pos_diff), distance), 3).reshape(amount, 3)
-  cdef np.long_t[:,::1] indexs = np.argwhere(distance > sphere_radius)
+  cdef np.ndarray[np.long_t, ndim=2] indexs = np.argwhere(distance > sphere_radius)
   cdef np.ndarray[np.long_t, ndim=1] index = np.reshape(indexs, len(indexs))
   force_vectors[index] = np.add(force_vectors[index], np.multiply(tmp[index], position_vectors[index]))
 
@@ -80,15 +80,15 @@ cpdef main(frame):
   cdef np.ndarray[np.double_t, ndim=2] force_vectors = np.zeros(shape=(amount, 3))
 
   # Initial Velocity and Momentum
-  cdef np.double_t[::1] random_velocity = np.random.uniform(-3, 3, 3)
+  cdef np.ndarray[np.double_t, ndim=1] random_velocity = np.random.uniform(-3, 3, 3)
   cdef np.float64_t tmp = np.sqrt(np.power(random_velocity[0], 2) + np.power(random_velocity[1], 2) + np.power(random_velocity[2], 2))
   cdef double initial_velocity = np.sqrt((3 * Kb * T)/(mass_argon))
-  cdef np.double_t[::1] velocity_vector = np.multiply(initial_velocity, np.divide(random_velocity, tmp))
-  cdef np.double_t[::1] momentum_vector = np.multiply(mass_argon, velocity_vector)
+  cdef np.ndarray[np.double_t, ndim=1] velocity_vector = np.multiply(initial_velocity, np.divide(random_velocity, tmp))
+  cdef np.ndarray[np.double_t, ndim=1] momentum_vector = np.multiply(mass_argon, velocity_vector)
 
   # Apply Initial Momentum to Direction
-  cdef np.double_t[:,::1] directions = np.random.uniform(low=-3, high=3, size=(amount, 3))
-  cdef np.ndarray[np.double_t, ndim=2] momentum_vectors = np.multiply(np.tile(momentum_vector, [amount, 1]), directions)
+  cdef np.ndarray[np.double_t, ndim=2] directions = np.random.uniform(low=-3, high=3, size=(amount, 3))
+  cdef np.ndarray[np.double_t, ndim=2] momentum_vectors = np.tile(momentum_vector, [amount, 1]) * directions
   result_file = open("out/Test.xyz","w")
   cdef int i
   for i in range(frame):
