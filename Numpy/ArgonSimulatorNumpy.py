@@ -11,7 +11,7 @@ sigma = 0.34
 epsilon = 0.993 
 T = 300
 sphere_radius = 30
-spring_const = 10
+spring_const = 3
 critical_distance = 15
 Kb = 8.3e-3
 

@@ -1,3 +1,3 @@
 import ArgonSimulatorCython
 
-ArgonSimulatorCython.main(100)
+ArgonSimulatorCython.main(20000)

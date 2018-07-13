@@ -16,7 +16,7 @@ cdef float epsilon = 0.993
 cdef float Kb = 8.3e-3
 cdef int T = 300
 cdef int sphere_radius = 30
-cdef int spring_const = 10
+cdef int spring_const = 3
 cdef int critical_distance = 15
 
 @cython.boundscheck(False)
