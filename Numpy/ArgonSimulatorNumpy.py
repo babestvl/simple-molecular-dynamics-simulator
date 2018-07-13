@@ -74,7 +74,7 @@ momentum_vector = mass_argon * velocity_vector
 directions = np.random.uniform(low=-3, high=3, size=(amount, 3))
 momentum_vectors = np.tile(momentum_vector, [amount, 1]) * directions
 
-result_file = open("out/Test.xyz","w")
+result_file = open("out/vdw_argon.xyz","w")
 
 # -------------------------
 
