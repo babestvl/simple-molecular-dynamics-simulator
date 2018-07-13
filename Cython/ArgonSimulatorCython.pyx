@@ -21,7 +21,7 @@ cdef int critical_distance = 15
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-cdef getDistance(np.ndarray[DOUBLE_t, ndim=2] position_vectors):
+cdef np.ndarray[DOUBLE_t, ndim=1] getDistance(np.ndarray[DOUBLE_t, ndim=2] position_vectors):
   cdef np.ndarray[DOUBLE_t, ndim=2] vector_square
   cdef np.ndarray[DOUBLE_t, ndim=1] r_square, distance
   vector_square = np.power(position_vectors, 2)
@@ -31,7 +31,7 @@ cdef getDistance(np.ndarray[DOUBLE_t, ndim=2] position_vectors):
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-cdef forceCalculation(np.ndarray[DOUBLE_t, ndim=2] position_vectors, np.ndarray[DOUBLE_t, ndim=2] force_vectors, int amount):
+cdef void forceCalculation(np.ndarray[DOUBLE_t, ndim=2] position_vectors, np.ndarray[DOUBLE_t, ndim=2] force_vectors, int amount):
   cdef np.ndarray[DOUBLE_t, ndim=3] tiled, diff
   cdef np.ndarray[DOUBLE_t, ndim=2] trans, pos_diff
   cdef np.ndarray[DOUBLE_t, ndim=1] distance, force
@@ -54,7 +54,7 @@ cdef forceCalculation(np.ndarray[DOUBLE_t, ndim=2] position_vectors, np.ndarray[
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-cdef elasticBorder(np.ndarray[DOUBLE_t, ndim=2] position_vectors, np.ndarray[DOUBLE_t, ndim=2] force_vectors, int amount):
+cdef void elasticBorder(np.ndarray[DOUBLE_t, ndim=2] position_vectors, np.ndarray[DOUBLE_t, ndim=2] force_vectors, int amount):
   global sphere_radius, spring_const
   cdef np.ndarray[DOUBLE_t, ndim=2] tmp
   cdef np.ndarray[DOUBLE_t, ndim=1] distance, pos_diff
@@ -69,7 +69,8 @@ cdef elasticBorder(np.ndarray[DOUBLE_t, ndim=2] position_vectors, np.ndarray[DOU
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-cdef verletCalculation(np.ndarray[DOUBLE_t, ndim=2] position_vectors, np.ndarray[DOUBLE_t, ndim=2] force_vectors, np.ndarray[DOUBLE_t, ndim=2] momentum_vectors , int amount):
+cdef void verletCalculation(np.ndarray[DOUBLE_t, ndim=2] position_vectors, np.ndarray[DOUBLE_t, ndim=2] force_vectors, 
+np.ndarray[DOUBLE_t, ndim=2] momentum_vectors , int amount):
   momentum_vectors += 0.5 * delta_time * force_vectors
   position_vectors += delta_time * momentum_vectors / mass_argon
   force_vectors.fill(0)
@@ -78,7 +79,7 @@ cdef verletCalculation(np.ndarray[DOUBLE_t, ndim=2] position_vectors, np.ndarray
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-cpdef main(frame):
+cpdef void main(frame):
   global start_time
   cdef np.ndarray[DOUBLE_t, ndim=2] position_vectors, force_vectors, momentum_vectors, directions
   cdef np.ndarray[DOUBLE_t, ndim=1] random_velocity, velocity_vector, momentum_vector
